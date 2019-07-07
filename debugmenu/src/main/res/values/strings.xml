@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Debug Menu</string>
+
+    <!--Activity String-->
+    <string name="title_name">Debug Menu</string>
+</resources>

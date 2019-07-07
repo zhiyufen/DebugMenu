@@ -1,1 +1,1 @@
-include ':app', ':mebugmenu'
+include ':app', ':debugmenu'
