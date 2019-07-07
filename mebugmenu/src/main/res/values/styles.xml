@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="ToolbarStyle" parent="@style/Theme.AppCompat.Light">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+
     <style name="AppCompatActionBarStyle" parent="Widget.AppCompat.Light.ActionBar">
         <item name="background">@color/default_actionbar_background</item>
         <item name="icon">@android:color/transparent</item>

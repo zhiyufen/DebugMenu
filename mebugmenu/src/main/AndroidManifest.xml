@@ -2,7 +2,7 @@
     package="com.android.zhiyufen.mebugmenu" >
 
     <application >
-
-        <activity android:name=".activity.DebugMenuSettingsActivity"/>
+        <activity android:name=".activity.DebugMenuSettingsActivity"
+            android:theme="@style/ToolbarStyle" />
     </application>
 </manifest>
