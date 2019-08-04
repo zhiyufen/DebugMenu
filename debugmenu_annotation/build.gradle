@@ -1,0 +1,15 @@
+apply plugin: 'java'
+
+ext {
+    bintrayName = 'debugmenu-annotation'
+    libraryName = 'DebugMenu Annotation'
+    libraryDescription = 'The annotation used in app api'
+    libraryVersion = "1.0.0"
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+sourceCompatibility = "8"
+targetCompatibility = "8"

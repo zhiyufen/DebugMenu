@@ -1,1 +1,1 @@
-include ':app', ':debugmenu'
+include ':app', ':debugmenu', ':debugmenu_annotation', ':debugmenu_compiler'

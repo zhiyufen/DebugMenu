@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="pref_key_sms_delete_limit"
+        android:summary="可选择你想要的方式"
+        android:title="幻灯片设置">
+    </Preference>
+</PreferenceScreen>

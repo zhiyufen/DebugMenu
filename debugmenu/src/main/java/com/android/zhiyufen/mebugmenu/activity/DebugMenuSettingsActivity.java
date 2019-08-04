@@ -1,17 +1,23 @@
 package com.android.zhiyufen.mebugmenu.activity;
 
 import android.app.ActionBar;
+import android.app.Fragment;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import com.google.android.material.appbar.AppBarLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.alibaba.android.arouter.launcher.ARouter;
+import com.android.zhiyufen.mebugmenu.DebugMenuConstants;
 import com.android.zhiyufen.mebugmenu.DebugMenuUtils;
 import com.android.zhiyufen.mebugmenu.R;
 
@@ -20,6 +26,7 @@ import com.android.zhiyufen.mebugmenu.R;
  */
 public class DebugMenuSettingsActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener{
     public static final String TAG = "ToolbarDemoActivity";
+    public static final String KEY_FRAGMENT_PATH = "key_fragment_path";
 
     private Toolbar mToolbar;
     private AppBarLayout mAppBarLayout;
@@ -34,8 +41,24 @@ public class DebugMenuSettingsActivity extends AppCompatActivity implements AppB
         setContentView(R.layout.debug_menu_settings_activity_layout);
 
         initToolbar();
+        initFragment(getIntent());
     }
 
+    private void initFragment(Intent intent) {
+        String fragmentPath;
+        Fragment fragment = null;
+        if (intent != null) {
+            fragmentPath = intent.getStringExtra(KEY_FRAGMENT_PATH);
+            fragment = getFragmentWithPath(fragmentPath);
+        }
+        if (null == fragment) {
+            fragment = getFragmentWithPath(DebugMenuConstants.AROUTER_MAIN_PRE_FRAGMENT);
+        }
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.debug_menu_fragment, fragment)
+                .commit();
+    }
     private void initToolbar() {
         mToolbar = findViewById(R.id.debug_settings_toolbar);
         mAppBarLayout = findViewById(R.id.debug_settings_app_bar);
@@ -98,5 +121,15 @@ public class DebugMenuSettingsActivity extends AppCompatActivity implements AppB
             layoutParams.height = (int) (screenHeight * 0.38f);
         }
         mAppBarLayout.setLayoutParams(layoutParams);
+    }
+
+    private Fragment getFragmentWithPath(String path) {
+        try {
+            return  (Fragment)ARouter.getInstance().build(path).navigation();
+        } catch (Exception e) {
+            //e.printStackTrace();
+            Log.w(TAG, "Can not found Fragment by path: " + path);
+            return null;
+        }
     }
 }

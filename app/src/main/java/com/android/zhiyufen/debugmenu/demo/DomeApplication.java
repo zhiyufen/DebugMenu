@@ -4,7 +4,7 @@ import android.app.Application;
 
 import com.alibaba.android.arouter.launcher.ARouter;
 
-public class DemuApplication extends Application {
+public class DomeApplication extends Application {
 
     @Override
     public void onCreate() {
@@ -13,10 +13,10 @@ public class DemuApplication extends Application {
     }
 
     private void initARouter() {
-        /*if (isDebug()) {
-            ARouter.openLog();
-            ARouter.openDebug();
-        }*/
+        //if (isDebug()) {
+        ARouter.openLog();
+        ARouter.openDebug();
+        //}
         ARouter.init(this);
     }
 }
