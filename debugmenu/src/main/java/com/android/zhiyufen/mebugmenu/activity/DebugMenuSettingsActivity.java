@@ -2,6 +2,7 @@ package com.android.zhiyufen.mebugmenu.activity;
 
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import com.google.android.material.appbar.AppBarLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.preference.Preference;
+import android.preference.PreferenceFragment;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +26,8 @@ import com.android.zhiyufen.mebugmenu.R;
 /**
  * DebugMenuSettingsActivity
  */
-public class DebugMenuSettingsActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener{
+public class DebugMenuSettingsActivity extends AppCompatActivity
+        implements AppBarLayout.OnOffsetChangedListener, PreferenceFragment.OnPreferenceStartFragmentCallback {
     public static final String TAG = "ToolbarDemoActivity";
     public static final String EXTRA_FRAGMENT_NAME = "extra_fragment_name";
     public static final String EXTRA_FRAGMENT_ARGS = "extra_fragment_args";
@@ -33,6 +37,7 @@ public class DebugMenuSettingsActivity extends AppCompatActivity implements AppB
     private TextView mTitleContainer;
     private TextView mTitle;
     private String mInitialFragment;
+    private String sRunningFragment;
 
     private int mPrevOrientation = Configuration.ORIENTATION_UNDEFINED;
 
@@ -55,6 +60,7 @@ public class DebugMenuSettingsActivity extends AppCompatActivity implements AppB
             getFragmentManager().beginTransaction()
                     .replace(R.id.debug_menu_fragment, fragment, mInitialFragment)
                     .commit();
+            sRunningFragment = mInitialFragment;
         }
 
     }
@@ -123,5 +129,25 @@ public class DebugMenuSettingsActivity extends AppCompatActivity implements AppB
             layoutParams.height = (int) (screenHeight * 0.38f);
         }
         mAppBarLayout.setLayoutParams(layoutParams);
+    }
+
+    @Override
+    public boolean onPreferenceStartFragment(PreferenceFragment caller, Preference pref) {
+        String fragmentClass = pref.getFragment();
+        if (TextUtils.equals(sRunningFragment, fragmentClass))
+            return true;
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setClass(this, getClass());
+
+        intent.putExtra(EXTRA_FRAGMENT_NAME, fragmentClass);
+        intent.putExtra(EXTRA_FRAGMENT_ARGS, caller.getArguments());
+        sRunningFragment = fragmentClass;
+
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 }
