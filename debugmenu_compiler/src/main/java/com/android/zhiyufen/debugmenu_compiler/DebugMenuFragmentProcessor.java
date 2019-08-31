@@ -46,7 +46,7 @@ public class DebugMenuFragmentProcessor extends AbstractProcessor {
             DebugMenuFragment annotation = element.getAnnotation(DebugMenuFragment.class);
         }
 
-        return false;
+        return true;
     }
 }
 

@@ -2,22 +2,21 @@ package com.android.zhiyufen.mebugmenu.activity;
 
 import android.app.ActionBar;
 import android.app.Fragment;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+
+import com.android.zhiyufen.mebugmenu.fragment.MainPreferenceFragment;
 import com.google.android.material.appbar.AppBarLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.alibaba.android.arouter.launcher.ARouter;
-import com.android.zhiyufen.mebugmenu.DebugMenuConstants;
 import com.android.zhiyufen.mebugmenu.DebugMenuUtils;
 import com.android.zhiyufen.mebugmenu.R;
 
@@ -26,12 +25,14 @@ import com.android.zhiyufen.mebugmenu.R;
  */
 public class DebugMenuSettingsActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener{
     public static final String TAG = "ToolbarDemoActivity";
-    public static final String KEY_FRAGMENT_PATH = "key_fragment_path";
+    public static final String EXTRA_FRAGMENT_NAME = "extra_fragment_name";
+    public static final String EXTRA_FRAGMENT_ARGS = "extra_fragment_args";
 
     private Toolbar mToolbar;
     private AppBarLayout mAppBarLayout;
     private TextView mTitleContainer;
     private TextView mTitle;
+    private String mInitialFragment;
 
     private int mPrevOrientation = Configuration.ORIENTATION_UNDEFINED;
 
@@ -41,24 +42,23 @@ public class DebugMenuSettingsActivity extends AppCompatActivity implements AppB
         setContentView(R.layout.debug_menu_settings_activity_layout);
 
         initToolbar();
-        initFragment(getIntent());
+        initFragment(savedInstanceState);
     }
 
-    private void initFragment(Intent intent) {
-        String fragmentPath;
-        Fragment fragment = null;
-        if (intent != null) {
-            fragmentPath = intent.getStringExtra(KEY_FRAGMENT_PATH);
-            fragment = getFragmentWithPath(fragmentPath);
+    private void initFragment(@Nullable Bundle savedInstanceState) {
+        mInitialFragment = getIntent().getStringExtra(EXTRA_FRAGMENT_NAME);
+        Bundle initialArguments = getIntent().getBundleExtra(EXTRA_FRAGMENT_ARGS);
+
+        if (savedInstanceState == null ) {
+            if (mInitialFragment == null) mInitialFragment = MainPreferenceFragment.class.getName();
+            Fragment fragment = Fragment.instantiate(this, mInitialFragment, initialArguments);
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.debug_menu_fragment, fragment, mInitialFragment)
+                    .commit();
         }
-        if (null == fragment) {
-            fragment = getFragmentWithPath(DebugMenuConstants.AROUTER_MAIN_PRE_FRAGMENT);
-        }
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.debug_menu_fragment, fragment)
-                .commit();
+
     }
+
     private void initToolbar() {
         mToolbar = findViewById(R.id.debug_settings_toolbar);
         mAppBarLayout = findViewById(R.id.debug_settings_app_bar);
@@ -68,7 +68,8 @@ public class DebugMenuSettingsActivity extends AppCompatActivity implements AppB
         mTitleContainer.setText(R.string.app_name);
 
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (getActionBar() != null) {
             getActionBar().setDisplayOptions(
                     ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_TITLE);
@@ -105,6 +106,7 @@ public class DebugMenuSettingsActivity extends AppCompatActivity implements AppB
             try {
                 array = getTheme().obtainStyledAttributes(new int[] {R.attr.actionBarSize});
                 String string = array.getString(0);
+                if (TextUtils.isEmpty(string)) return;
                 String number = string.replaceAll("[^[0-9|.]]", "");
                 float dpValue = Float.parseFloat(number);
                 float pxValue = DebugMenuUtils.dpToPx(this, dpValue);
@@ -121,15 +123,5 @@ public class DebugMenuSettingsActivity extends AppCompatActivity implements AppB
             layoutParams.height = (int) (screenHeight * 0.38f);
         }
         mAppBarLayout.setLayoutParams(layoutParams);
-    }
-
-    private Fragment getFragmentWithPath(String path) {
-        try {
-            return  (Fragment)ARouter.getInstance().build(path).navigation();
-        } catch (Exception e) {
-            //e.printStackTrace();
-            Log.w(TAG, "Can not found Fragment by path: " + path);
-            return null;
-        }
     }
 }

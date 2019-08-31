@@ -5,10 +5,6 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import androidx.annotation.Nullable;
 
-import com.alibaba.android.arouter.facade.annotation.Route;
-import com.android.zhiyufen.mebugmenu.DebugMenuConstants;
-
-@Route(path= DebugMenuConstants.AROUTER_MAIN_PRE_FRAGMENT)
 public class MainPreferenceFragment extends PreferenceFragment{
 
     public MainPreferenceFragment() {
