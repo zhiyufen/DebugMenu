@@ -9,7 +9,7 @@ import com.android.zhiyufen.mebugmenu.R;
 import com.android.zhiyufen.mebugmenu.data.DebugMenuSettings;
 
 public class DebugMenuSwitchPreference extends SwitchPreference{
-    private String mDebugKey = null;
+    private String mDebugKey;
     private Context mContext;
 
 

@@ -8,5 +8,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)
 public @interface DebugMenuFragment {
-    String name() default "";
+    String title() default "";
 }

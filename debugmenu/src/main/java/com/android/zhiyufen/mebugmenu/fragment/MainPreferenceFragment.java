@@ -5,6 +5,10 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import androidx.annotation.Nullable;
 
+import com.android.zhiyufen.mebugmenu.DebugMenuPreferenceManager;
+
+import java.util.List;
+
 public class MainPreferenceFragment extends PreferenceFragment{
 
     public MainPreferenceFragment() {
@@ -14,10 +18,16 @@ public class MainPreferenceFragment extends PreferenceFragment{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PreferenceScreen ps = getPreferenceManager().createPreferenceScreen(getActivity());
-        PreferenceScreen switchPreference = getPreferenceManager().createPreferenceScreen(getActivity());
-        ps.addPreference(switchPreference);
-        switchPreference.setSummary("可选择你想要的方式");
-        setPreferenceScreen(ps);
+        List<PreferenceScreen> debugMenuList = DebugMenuPreferenceManager.getInstance()
+                .getAllScreen(getActivity(), getPreferenceManager());
+        PreferenceScreen mainPreferenceScreen = getPreferenceManager().createPreferenceScreen(getActivity());
+
+        for (PreferenceScreen screen : debugMenuList) {
+            if (screen != null) {
+                mainPreferenceScreen.addPreference(screen);
+            }
+        }
+
+        setPreferenceScreen(mainPreferenceScreen);
     }
 }

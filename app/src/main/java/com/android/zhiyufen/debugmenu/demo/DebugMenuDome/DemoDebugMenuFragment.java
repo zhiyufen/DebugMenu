@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 import com.android.zhiyufen.debugmenu.annotation.DebugMenuFragment;
 import com.android.zhiyufen.debugmenu.demo.R;
 
-@DebugMenuFragment
+@DebugMenuFragment(title = "我是测试菜单")
 public class DemoDebugMenuFragment extends PreferenceFragment {
 
     @Override

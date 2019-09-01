@@ -2,8 +2,6 @@ package com.android.zhiyufen.mebugmenu;
 
 public class DebugMenuConstants {
 
-    /**
-     * ARouter constant
-     */
-    public static final String AROUTER_MAIN_PRE_FRAGMENT = "/fragment/main";
+    public static final String EXTRA_FRAGMENT_NAME = "extra_fragment_name";
+    public static final String EXTRA_FRAGMENT_ARGS = "extra_fragment_args";
 }
