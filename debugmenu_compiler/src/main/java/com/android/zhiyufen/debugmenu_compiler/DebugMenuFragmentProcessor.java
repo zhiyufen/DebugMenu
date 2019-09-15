@@ -25,6 +25,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 
@@ -35,6 +36,9 @@ public class DebugMenuFragmentProcessor extends AbstractProcessor {
     private Elements mElementUtils;
     private Filer mFiler;
     private Messager mMessager;
+
+    private TypeMirror TYPE_PREFERENCE_FRAGMENT = null;
+
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
@@ -42,6 +46,9 @@ public class DebugMenuFragmentProcessor extends AbstractProcessor {
         mElementUtils = processingEnv.getElementUtils();
         mFiler = processingEnv.getFiler();
         mMessager = processingEnv.getMessager();
+
+        TYPE_PREFERENCE_FRAGMENT = mElementUtils.getTypeElement(
+                "android.preference.PreferenceFragment").asType();
     }
 
     @Override
@@ -66,20 +73,26 @@ public class DebugMenuFragmentProcessor extends AbstractProcessor {
                 .addStatement("$T debugFragmentLists = new $T<>()", liftOfFragmentInfo, ArrayList.class);
 
         for (Element element : elements) {
-            DebugMenuFragment annotation = element.getAnnotation(DebugMenuFragment.class);
-            String title = annotation.title();
-            String fragmentName = "";
-
             if (element instanceof TypeElement) {
+                DebugMenuFragment annotation = element.getAnnotation(DebugMenuFragment.class);
+                String title = annotation.title();
+                String fragmentName;
+
                 TypeElement typeElement = (TypeElement)element;
                 fragmentName = typeElement.getQualifiedName().toString();
-            }
-            //TODO: add a judgment for string, may be is empty.
-            if (textIsEmpty(title) || textIsEmpty(fragmentName))
-                continue;
+                if (textIsEmpty(title) || textIsEmpty(fragmentName))
+                    continue;
 
-            getAllScreenBuilder.addStatement("debugFragmentLists.add(new $T($S, $S))",
-                    fragmentInfo, title, fragmentName);
+                //Check the class, which using @DebugMenuFragment, is extends from PreferenceFragment;
+                if (typeElement.getSuperclass().equals(TYPE_PREFERENCE_FRAGMENT)) {
+                    getAllScreenBuilder.addStatement("debugFragmentLists.add(new $T($S, $S))",
+                            fragmentInfo, title, fragmentName);
+                } else {
+                    mMessager.printMessage(Diagnostic.Kind.WARNING, "[DebugMenu] "
+                            + typeElement.getSuperclass()
+                            + "is not extend android.preference.PreferenceFragment ");
+                }
+            }
         }
         getAllScreenBuilder.addStatement("return debugFragmentLists");
 
